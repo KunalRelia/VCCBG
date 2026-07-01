@@ -10,7 +10,7 @@ Next, please clone this repository. Then, follow these steps:
 
 ```
 % cd VCCBG/
-% lake exe cache get
+% lake exe cache get (or lake exe cache get! for complete download)
 % lake build
 ```
 
