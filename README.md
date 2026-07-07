@@ -56,7 +56,7 @@ This is where the entire repository reaches its climax. This file handles the cl
 It asks the critical question: What if Algorithm B checks every single seed vertex in the graph, and absolutely none of them yield a smaller vertex cover? By sewing together the seed-coverage maps, the components captured by the boundaries, and Theorem 12, Thm13Lemma16_post123.lean delivers the final, definitive proof: if no local improvement is found anywhere, then no S-diminishing bipartite graph exists anywhere in the entire graph. Therefore, the algorithm's failure to find an improvement is an absolute, global guarantee that the current vertex cover S is genuinely a minimum vertex cover.
 
 ## Status
-We have completed the formalization of key proofs ("Goals Accomplished!"). However, we used a couple of axioms to do so. Hence, to ensure the Lean formalization is unconditional (assumption-free) just like the paper's results, we are refactoring or reengineering many files. Therefore, the Lean code in this repository is divided into two bins: completed and in-progress. 
+We have completed the formalization of key proofs: Sorry Count is zero and all "Goals Accomplished!". However, we defined a major axiom to do so. Hence, to ensure the Lean formalization is unconditional just like the paper's results, we are refactoring or reengineering many files. Therefore, the Lean code in this repository is virtually divided into two bins: completed and in-progress.
 
 ### Completed: 
 * Thm12.lean
@@ -65,3 +65,5 @@ We have completed the formalization of key proofs ("Goals Accomplished!"). Howev
 
 ### In-progress:
 all other files
+
+Specifically, the changes are being made to the in-progress files to ensure that the "DimBip_seed_capture" axiom in Thm13Lemma16_post123.lean is replaced by a Theorem. The presence of this axiom creates a verification gap even when there are no compilation errors and all goals are accomplished.
