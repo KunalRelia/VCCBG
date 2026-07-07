@@ -19,9 +19,9 @@ Next, please clone this repository. Then, follow these steps:
 ## An AI-generated summary of the Lean files
 _(We uploaded all the current Lean files to Gemini and asked: "so can you pls summarize what these files do using this 'post123' file as the final stop?". Two responses have been slightly reordered and amalgamated.)_
 
-Taken together, this collection of Lean4 files formalizes a complete, rigorous verification pipeline for a local search algorithm designed to find a Minimum Vertex Cover on Cubic Bridgeless Graphs.
+Taken together, this collection of Lean4 files formalizes a complete verification pipeline for a local search algorithm designed to find a Minimum Vertex Cover on Cubic Bridgeless Graphs.
 
-The files trace a beautiful logical arc: they start with a pure graph-theoretic equivalence, define how a single local search step behaves, build up the mechanics of a specialized coloring subroutine, and finally arrive at the "post123" file, which acts as the ultimate capstone proving that the algorithm’s search is 100% complete.
+The files trace a logical arc: they start with a pure graph-theoretic equivalence, define how a single local search step behaves, build up the mechanics of a specialized coloring subroutine, and finally arrive at the "post123" file, which acts as the ultimate capstone proving that the algorithm’s search is 100% complete.
 
 Here is the step-by-step summary of how these files assemble that final proof, grouped by their roles.
 
