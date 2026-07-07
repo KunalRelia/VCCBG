@@ -60,8 +60,8 @@ We have completed the formalization of key proofs: Sorry Count is zero and all "
 
 ### Completed: 
 * `Thm12.lean`
-* Thm13Lemma9.lean
-* Thm13Lemma11.lean
+* `Thm13Lemma9.lean`
+* `Thm13Lemma11.lean`
 
 ### In-progress:
 all other files
