@@ -1,7 +1,7 @@
 # Lean4 Formalization of the VCCBG paper
 This repository is aimed at formalizing the algorithmic results of the vertex cover problem on cubic bridgeless graphs (VCCBG) [paper](https://kunalrelia.github.io/img/VCCBG.pdf) using Lean4. Currently, we are focusing on the formalization of the proof of correctness of the alternative algorithm presented in Section C of the paper, which proves that VCCBG $\in$ P.
 
-_AI Disclaimer: The Lean code was generated and refined over multiple iterations using Claude Sonnet 4.6 or 5 (using the Low or Max thinking modes). Gemini, GPT, and Claude were used for debugging while ensuring their responses were free from context-bias._
+_AI Disclaimer: The Lean code was primarily generated and refined over multiple iterations using Claude Sonnet 4.6 or 5 (using the Low or Max thinking modes), with Gemini (3.6 Flash or 3.1 Pro) used as a secondary source for some code. Gemini, GPT, and Claude were used for debugging while ensuring their responses were free from context-bias._
 
 ## Build the Lean files
 
