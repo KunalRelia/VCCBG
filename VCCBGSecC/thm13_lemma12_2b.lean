@@ -900,7 +900,7 @@ public theorem AlgC_correct_blue
 -- ═══════════════════════════════════════════════════════════════════════════
 
 /-- No two adjacent vertices are simultaneously blue under `C`. -/
-public def NoBlueBlue (G : SimpleGraph V) (C : Coloring V) : Prop :=
+public abbrev NoBlueBlue (G : SimpleGraph V) (C : Coloring V) : Prop :=
   ∀ x y, G.Adj x y → C x = blue → C y = blue → False
 
 public theorem AlgC_preserves_NoBlueBlue
