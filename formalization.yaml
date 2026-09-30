@@ -5,19 +5,28 @@
 version: "v0.4"
 
 project:
-  name: "Formalization of Theorem 8 of the VCCBG paper"
+  name: "Formalization of the VCCBG paper"
   description: >-
-    This is a formalization of the core part of the paper on the complexity  
-    of the vertex cover problem on cubic bridgeless graphs (VCCBG). Specifically, Part II
-    of the VCCBG paper presents an unconditional deterministic polynomial-time algorithm for
-    VCCBG. The formalization here is of the proof of correctness of the algorithm. 
-    It proves the theorem via two lemmas: "If Algorithm 1 returns Yes, then the given instance of VCCBG is a
-    Yes instance" (Lemma 6) and "If the given instance of VCCBG is a Yes instance, then Algorithm 1 returns Yes"
-    (Lemma 5). The formalization strictly follows the paper's structure: 
-    it first formalizes a novel data structure (represents table) and a novel concept (diminishing hops
-    analogous to augmenting paths used for maximum matching), a novel graph-theory result (bridging 
-    diminishing hops and minimum vertex cover analogous to Berge's Theorem), and discovers an 
-    algorithm that uses diminishing hops to find a minimum vertex cover (analogous to the Blossom
+    This repository contains the formal verification in Lean of 
+    results from the paper on the computational complexity of the 
+    Vertex Cover Problem on Cubic Bridgeless Graphs (VCCBG). 
+    Specifically, this repository formalizes: 
+    1. an unconditional deterministic polynomial-time exact 
+    algorithm for VCCBG (Theorem 2, Part II).
+    2. the proof of NP-completeness of VCCBG (Theorem 1, Section B). 
+    3. the proof of correctness of an alternative unconditional 
+    deterministic polynomial-time exact algorithm for 
+    VCCBG (Theorem 13, Section C). 
+    The core contribution of the paper are the algorithms. 
+    For each one [Part II; Section C], the formalization strictly follows 
+    the paper's structure and formalizes: 
+    1. a novel data structure [represents table; n/a] and 
+    2. a novel concept ([diminishing hops; diminishing bipartite graphs] analogous 
+    to augmenting paths used for maximum matching), 
+    3. a novel graph-theory result (bridging [diminishing hops; diminishing 
+    bipartite graphs] and minimum vertex cover analogous to Berge's Theorem), 
+    4. discovers an algorithm that uses [diminishing hops; diminishing
+    bipartite graphs] to find a minimum vertex cover (analogous to the Blossom
     Algorithm using augmenting paths to find a maximum matching due to Berge Theorem).
   authors:
     - Kunal Relia
@@ -47,7 +56,7 @@ sources:
 
 status:
   scope: >-
-    Theorem 8 of the paper is formalized.
+    Theorem 1, Theorem 2, and Theorem 8 of the paper are formalized.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: []
@@ -77,7 +86,7 @@ alignment:
   namespace: ""
   statements:
     - source: "Paper at https://kunalrelia.github.io/img/VCCBG.pdf."
-      lean: "VCCBGPartII.Theorem8_wrapper"
+      lean: "VCCBGSecB.Theorem1_wrapper, VCCBGPartII.Theorem2_wrapper, VCCBGSecC.Theorem13_wrapper"
       module: "challenge.lean (statement), solution.lean (proof)"
       status: "proved"
       note: ""
