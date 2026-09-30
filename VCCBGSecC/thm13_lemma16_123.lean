@@ -63,9 +63,6 @@ module
   From Theorem12 (`thm12`, imported transitively):
     DimBip G S                                  — Definition 25
 
-  AXIOM COUNT:  0 introduced in this file (`PetersenMatching` axiom
-  imported from Lemma 9)
-  SORRY COUNT:  0
   ═══════════════════════════════════════════════════════════════════════════
 -/
 
@@ -236,7 +233,7 @@ public theorem Lemma16_Points1to3
 -- §6. Status
 -- ═══════════════════════════════════════════════════════════════════════════
 /-
-  STATUS: no `sorry`, `axiom`, or hypothesis hacking. (Petersen Matching imported.)
+  STATUS: no `sorry`, `axiom`, or hypothesis hacking. (Petersen Matching axiom imported.)
 
   Proof map:
     mem_seedsOf_of_perfect ← local, unchanged — pure Finset/matching
