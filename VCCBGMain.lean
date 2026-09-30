@@ -8,7 +8,7 @@ public import VCCBGSecB.thm1
 `Theorem1` depends on the following axioms in
   addition to the three standard Lean axioms:
   - [`NPHard_of_restriction`, `Theorem10`, `VC_InNP`, `Whitney`]
-    We discuss the details of these known results in
+    We discuss the details of these published results in
     `§6. Commentary` of `thm1.lean`.
 -/
 
@@ -32,10 +32,10 @@ public import VCCBGSecC.thm13
   addition to the three standard Lean axioms:
 
   - [`PetersenMatching`, `AlgB_spec`, `MatchingLowerBound`]
-    We discuss the details of these known results in
+    We discuss the details of these published results in
     `§8. Axiom inventory and discharge guide` of `thm13_lemma9.lean`.
 
   - [`seed_robustness`]
-    We discuss the details of these known results in
+    We discuss the details of this new result in
     `§3. THE AXIOM.` of `thm13_lemma16_proof.lean`.
 -/
