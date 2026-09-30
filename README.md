@@ -34,7 +34,7 @@ The formalization strictly mirrors the structure of the paper, covering:
     - vertex cover problem on bridgeless cubic planar graphs is NP-complete.
 3. vertex cover problem on bridgeless cubic graphs is NP-complete.
 
-We axiomatize the previously proven results. 
+We axiomatize the previously proven results (e.g., Mohar's result. For a summary, please see [VCCBGMain.lean](https://github.com/KunalRelia/VCCBG/blob/main/VCCBGMain.lean)). 
 
 --- 
 
