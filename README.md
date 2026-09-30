@@ -36,7 +36,7 @@ The formalization strictly mirrors the structure of the paper, covering:
     - vertex cover problem on bridgeless cubic planar graphs is NP-complete.
 3. vertex cover problem on bridgeless cubic graphs is NP-complete.
 
-We axiomatize the previously proven results (e.g., Mohar's result. For a summary, please see [VCCBGMain.lean](https://github.com/KunalRelia/VCCBG/blob/main/VCCBGMain.lean)). 
+We axiomatize the previously published results (e.g., Mohar's result. For a summary, please see [VCCBGMain.lean](https://github.com/KunalRelia/VCCBG/blob/main/VCCBGMain.lean)). 
 
 --- 
 
@@ -52,7 +52,7 @@ The formalization strictly mirrors the structure of the paper, covering:
 * **Graph-Theoretic Theorem:** Bridging diminishing bipartite graphs and minimum vertex cover (analogous to Berge's Theorem).
 * **Algorithmic Result:** An algorithm utilizing diminishing bipartite graphs to find a minimum vertex cover (analogous to the Blossom Algorithm using augmenting paths to find maximum matching due to Berge's Theorem).
 
-We axiomatize the previously proven results. **Importantly**, we axiomatize an unproven concept.
+We axiomatize the previously published results. **Importantly**, we axiomatize an unpublished result that is proven in the paper.
 
 --- 
 
