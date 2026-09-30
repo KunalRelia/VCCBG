@@ -8,7 +8,7 @@ set_option linter.unusedSectionVars false
 set_option linter.unusedVariables false
 set_option linter.defProp false
 /-!
-# Advertised statements — Theorem 1 and Theorem 2
+# Advertised statements — Theorem 1, Theorem 2, and Theorem 13
 
   **Theorem 1** — "VC − CBG is NP-complete." — obtained from Theorem 11 by
    "proof by restriction" (`thm1.lean`).
@@ -17,21 +17,36 @@ set_option linter.defProp false
    result, obtained from Theorem 8 (Algorithm 1 is correct) together with
    Theorem 9 (Algorithm 1 runs in O(m^5) time).
 
+  **Theorem 13** — "Algorithm A returns Yes iff the given instance of VC − CBG
+   is a Yes instance" — obtained from Lemma 9 (forward direction) and Lemma 10
+   (reverse direction) (`thm13.lean`).
+
   This file is entirely self-contained: it imports only `Mathlib` and
   re-derives, verbatim, every definition transitively needed to *state*
   `Theorem1` (the graph-instance / family definitions and the opaque
-  `InNP` / `NPHard` / `IsPlanar` of `thm1.lean`) and `Theorem2` (those of
+  `InNP` / `NPHard` / `IsPlanar` of `thm1.lean`), `Theorem2` (those of
   `thm8.lean` and its predecessors, the running-time definitions of `thm9.lean`,
-   and `PolyBound` / `InP` of `thm2.lean`), but none of the
-  intermediate theorems those files use to *prove* them. The final theorems,
-  `VCCBGSecB.Theorem1_wrapper` and `VCCBGPartII.Theorem2_wrapper`, are each
-  left as a `sorry`.
+   and `PolyBound` / `InP` of `thm2.lean`) and `Theorem13` (the matching,
+  Algorithm A / B / C definitions of `thm13_lemma9.lean` … `thm13_lemma16_*.lean`),
+  but none of the intermediate theorems those files use to *prove* them. The
+  final theorems, `VCCBGSecB.Theorem1_wrapper`, `VCCBGPartII.Theorem2_wrapper`
+  and `VCCBGSecC.Theorem13_wrapper`, are each left as a `sorry`.
 
   `Theorem2` is a fully proved theorem in the development, so nothing else is
   assumed for it. `Theorem1`, like `thm1.lean`, rests on four cited external
   results that are declared as `axiom`s in §12 (`NPHard_of_restriction`,
   `Theorem10`, `Whitney`, `VC_InNP`); `NPHard` / `InNP` are opaque, so
   without them the statement would be unprovable.
+
+  `Theorem13` is stated with the *same* names and signatures as in the
+  development (`algB_step''`, `algB_sweep''`, `algB_run''`, `FixedPointCover''`,
+  `seedsOf`, `AlgA_Yes`, …). The one place the two differ is that the
+  development's `algB_step''` obtains its blue/red sets from the proof-carrying
+  structure `Lemma14_witness : AltBip G S`, whose proofs need the whole
+  Algorithm-C correctness development. Here `algB_step''` reads the same two
+  data fields directly (`reachU` / `reachW`, which is what `Lemma14_witness.U` /
+  `.W` are by `rfl`) and recomputes the components with `bipCompU` / `bipCompW`,
+  which are `AltBip.compU` / `AltBip.compW` with the `AltBip` unpacked.
 -/
 
 open Finset
@@ -783,7 +798,241 @@ axiom Whitney (inst : GraphInstance) (h : Is2VertexConnected inst) :
 axiom VC_InNP (P : GraphInstance → Prop) : InNP (VCYes P)
 
 -- ═══════════════════════════════════════════════════════════════════════════
--- §13. The challenge: Theorem 1
+-- §13. `thm13.lean` and predecessors: matchings, Algorithms A / B / C
+-- ═══════════════════════════════════════════════════════════════════════════
+
+section VCCBGSecC
+
+-- `thm12.lean`
+/-- `MinVCover G S`: S is a vertex cover of minimum cardinality. -/
+public abbrev MinVCover (G : SimpleGraph V) (S : Finset V) : Prop :=
+  VCover G S ∧ ∀ T : Finset V, VCover G T → S.card ≤ T.card
+
+-- `thm13_lemma9.lean`
+/-- M is a matching: distinct edges are vertex-disjoint. -/
+public abbrev IsMatching (M : Finset (Sym2 V)) : Prop :=
+   ∀ e₁ ∈ M, ∀ e₂ ∈ M, e₁ ≠ e₂ → ∀ v : V, ¬ (v ∈ e₁ ∧ v ∈ e₂)
+
+/-- M is a perfect matching: every vertex belongs to some edge of M. -/
+public abbrev IsPerfectMatching (M : Finset (Sym2 V)) : Prop :=
+  IsMatching M ∧ ∀ v : V, ∃ e ∈ M, v ∈ e
+
+-- `YesInstance` (`thm13_lemma9.lean`) is literally the §9 definition above.
+
+/-- `AlgA_Yes G k`: Algorithm A outputs Yes on input (G, k).
+    Defined as a Prop: both conditions that lead to Yes in Algorithm A hold:
+      - k ≥ |M| so Line 3 does not return No, AND
+      - ∃ S returned by AlgB with |S| ≤ k so Line 8 returns Yes. -/
+public def AlgA_Yes (G : SimpleGraph V) (k : ℕ) : Prop :=
+  ∃ M : Finset (Sym2 V),
+    IsPerfectMatching M ∧ 2 * M.card = Fintype.card V ∧ M.card ≤ k ∧
+  ∃ S : Finset V,
+    MinVCover G S ∧ S.card ≤ k
+
+-- `thm13_lemma12_1.lean`: Algorithm C
+/-- The five colors used by the NEW Algorithm C.
+    `yellow` : "a vertex that is colored black when visited, and hence
+    not flipped and remains in S — a black vertex that is unvisited." -/
+public inductive Color : Type where
+  | white | blue | red | black | yellow
+  deriving DecidableEq, Repr
+
+open Color
+
+public abbrev Coloring V := V → Color
+
+/-- Given a coloring `C` and a vertex `u`, apply the "yellow the rest"
+    side effect (new pseudocode, lines 13, 26): every neighbor of `u`
+    (per the traversal order `nbrOrder u`) that lies in `S` and is
+    currently `white` gets recolored `yellow`. A single left fold over
+    `nbrOrder u`, applied AFTER `u` itself has already been set to
+    `blue` by the caller. -/
+public abbrev yellowRestOfWhiteSNbrs (S : Finset V) (C : Coloring V) (nbrs : List V) :
+    Coloring V :=
+  nbrs.foldl
+    (fun C' w => if w ∈ S ∧ C' w = white then Function.update C' w yellow else C')
+    C
+
+/-- `AlgC G S nbrOrder fuel C v us`: run the NEW Algorithm C, "currently
+    at" vertex `v`, with `us` the remaining neighbors of `v` still to be
+    processed. Direct transcription of the new pseudocode: blue/red both
+    keep their old white-triggered rule PLUS a new yellow-triggered
+    blackening rule; black additionally propagates using the same two
+    target-color rules a blue vertex would use. -/
+public abbrev AlgC (G : SimpleGraph V) (S : Finset V) (nbrOrder : V → List V) :
+    ℕ → Coloring V → V → List V → Coloring V
+  | 0, C, _, _ => C
+  | _+1, C, _, [] => C
+  | n+1, C, v, u :: us =>
+      if C v = blue then
+        if u ∉ S ∧ C u = white then
+          let C1 := Function.update C u red
+          let C2 := AlgC G S nbrOrder n C1 u (nbrOrder u)
+          AlgC G S nbrOrder n C2 v us
+        else if u ∈ S ∧ C u = yellow then
+          let C1 := Function.update C u black
+          let C2 := AlgC G S nbrOrder n C1 u (nbrOrder u)
+          AlgC G S nbrOrder n C2 v us
+        else
+          AlgC G S nbrOrder n C v us
+      else if C v = red then
+        if u ∈ S ∧ C u = white then
+          let C1 := Function.update C u blue
+          let C2 := yellowRestOfWhiteSNbrs S C1 (nbrOrder u)
+          let C3 := AlgC G S nbrOrder n C2 u (nbrOrder u)
+          AlgC G S nbrOrder n C3 v us
+        else if u ∈ S ∧ C u = yellow then
+          let C1 := Function.update C u black
+          let C2 := AlgC G S nbrOrder n C1 u (nbrOrder u)
+          AlgC G S nbrOrder n C2 v us
+        else
+          AlgC G S nbrOrder n C v us
+      else if C v = black then
+        if u ∉ S ∧ C u = white then
+          let C1 := Function.update C u red
+          let C2 := AlgC G S nbrOrder n C1 u (nbrOrder u)
+          AlgC G S nbrOrder n C2 v us
+        else if u ∈ S ∧ C u = white then
+          let C1 := Function.update C u blue
+          let C2 := yellowRestOfWhiteSNbrs S C1 (nbrOrder u)
+          let C3 := AlgC G S nbrOrder n C2 u (nbrOrder u)
+          AlgC G S nbrOrder n C3 v us
+        else
+          AlgC G S nbrOrder n C v us
+      else
+        AlgC G S nbrOrder n C v us
+
+/-- The initial coloring, CORRECTED: matching Algorithm B's own behavior,
+    the seed `v` is set blue AND — in the very same initialization step,
+    exactly as every other blue-assignment does — its white `S`-neighbors
+    are simultaneously colored `yellow`. Without this, the seed would be
+    the ONE blue vertex in the whole run whose own white `S`-neighbors
+    are not pre-yellowed, breaking the invariant every other blue vertex
+    satisfies by construction (see `AlgC_blue_red_recurse` /
+    `AlgC_black_blue_recurse`'s own `yellowRestOfWhiteSNbrs` step). With
+    this fix, EVERY blue vertex — seed or not — has the property that its
+    white-at-creation-time `S`-neighbors are already `yellow` by the time
+    its own neighbor-list traversal begins, with no special-casing of the
+    seed needed anywhere downstream. -/
+public abbrev initColoring (G : SimpleGraph V) (S : Finset V) (nbrOrder : V → List V)
+    (v : V) : Coloring V :=
+  yellowRestOfWhiteSNbrs S (Function.update (fun _ => white) v blue) (nbrOrder v)
+
+/-- The full run of Algorithm C from seed `v`. -/
+public abbrev runAlgC (G : SimpleGraph V) (S : Finset V) (nbrOrder : V → List V)
+    (fuel : ℕ) (v : V) : Coloring V :=
+  AlgC G S nbrOrder fuel (initColoring G S nbrOrder v) v (nbrOrder v)
+
+/-- **The correct fuel-decrease measure**: `whiteCount` alone is NOT
+    enough, because a `yellow → black` transition (blue/red-branch's
+    "already-yellow" rule) consumes a recursive call without decreasing
+    `whiteCount` — the vertex was yellow, not white, so it was never
+    counted. `resolvedMeasure` counts vertices that are NOT YET
+    finalized — `white` or `yellow` — and EVERY genuine color-assignment
+    site in `AlgC` (white→red, white→blue, yellow→black) strictly
+    decreases it, while the `yellowRestOfWhiteSNbrs` side effect leaves
+    it EXACTLY unchanged (it only moves vertices between the two counted
+    buckets). This is the measure `fuelBound` is built on, below. -/
+public abbrev resolvedMeasure (C : Coloring V) : ℕ :=
+  (Finset.univ.filter (fun x => C x = white ∨ C x = yellow)).card
+
+/-- A fuel bound built on `resolvedMeasure` (NOT `whiteCount` — see that
+    definition's own docstring for why `whiteCount` alone is unsound
+    here: `yellow → black` transitions consume a recursive call without
+    decreasing `whiteCount`). -/
+public abbrev fuelBound (C : Coloring V) (us : List V) : ℕ :=
+  resolvedMeasure C * (Fintype.card V + 2) + us.length + 1
+
+/-- Number of fuel steps used for the Algorithm-C run seeded at `v`. -/
+public abbrev seedFuel (G : SimpleGraph V) (S : Finset V) (nbrOrder : V → List V) (v : V) : ℕ :=
+  fuelBound (initColoring G S nbrOrder v) (nbrOrder v)
+
+-- `thm13_lemma14.lean`
+open Classical in
+/-- The Finset of vertices colored blue under `C` — the "U" set of
+    Definition 24. (`v` unused — kept for downstream signature
+    compatibility.) -/
+public noncomputable def reachU (G : SimpleGraph V) (S : Finset V) (C : Coloring V)
+    (v : V) : Finset V :=
+  Finset.univ.filter (fun w => C w = blue)
+
+open Classical in
+/-- The Finset of vertices colored red under `C` — the "W" set of
+    Definition 24. (`v` unused — kept for downstream signature
+    compatibility.) -/
+public noncomputable def reachW (G : SimpleGraph V) (S : Finset V) (C : Coloring V)
+    (v : V) : Finset V :=
+  Finset.univ.filter (fun w => C w = red)
+
+-- `thm13_lemma12_2a.lean`
+/-- The natural well-formedness condition tying the algorithmic traversal
+    order `nbrOrder` to the actual graph adjacency `G.Adj`. -/
+public abbrev OrderMatchesAdj (G : SimpleGraph V) (nbrOrder : V → List V) : Prop :=
+  ∀ x y, y ∈ nbrOrder x ↔ G.Adj x y
+
+-- `thm13_lemma16_123.lean`
+/-- The seed list: all endpoints of edges in `M` (every vertex appears
+    when `M` is a perfect matching — see `mem_seedsOf_of_perfect`). -/
+public noncomputable def seedsOf (M : Finset (Sym2 V)) : List V :=
+  M.toList.flatMap (fun e => [e.out.1, e.out.2])
+
+-- `thm13_lemma10.lean`: Algorithm B, component-restricted version
+/-- Adjacency inside the bipartite graph on `U ∪ W`
+    (`AltBip.inducedAdj`, with the `AltBip` unpacked to its `U` / `W`). -/
+public abbrev bipAdj (G : SimpleGraph V) (U W : Finset V) (x y : V) : Prop :=
+  G.Adj x y ∧ x ∈ U ∪ W ∧ y ∈ U ∪ W
+
+open Classical in
+/-- The connected component of `u` restricted to the `U` side (`AltBip.compU`). -/
+public noncomputable abbrev bipCompU (G : SimpleGraph V) (U W : Finset V) (u : V) : Finset V :=
+  U.filter (fun x => Relation.ReflTransGen (bipAdj G U W) u x)
+
+open Classical in
+/-- The connected component of `u` restricted to the `W` side (`AltBip.compW`). -/
+public noncomputable abbrev bipCompW (G : SimpleGraph V) (U W : Finset V) (u : V) : Finset V :=
+  W.filter (fun x => Relation.ReflTransGen (bipAdj G U W) u x)
+
+open Classical in
+/-- Component-restricted Algorithm B step. Same guards and same result as the
+    development's `algB_step''`; the blue / red sets are `reachU` / `reachW` of
+    the Algorithm-C coloring seeded at `v`. -/
+public noncomputable def algB_step''
+    (G : SimpleGraph V) (S : Finset V) (nbrOrder : V → List V)
+    (hOrder : OrderMatchesAdj G nbrOrder) (v : V) : Finset V :=
+  if hv : v ∈ S then
+    if hSVC : VCover G S then
+      let C := runAlgC G S nbrOrder (seedFuel G S nbrOrder v) v
+      let U := reachU G S C v
+      let W := reachW G S C v
+      if h : ∃ u ∈ U, (bipCompW G U W u).card < (bipCompU G U W u).card then
+        (S \ bipCompU G U W h.choose) ∪ bipCompW G U W h.choose
+      else S
+    else S
+  else S
+
+public noncomputable def algB_sweep''
+    (G : SimpleGraph V) (nbrOrder : V → List V) (hOrder : OrderMatchesAdj G nbrOrder)
+    (seeds : List V) (S : Finset V) : Finset V :=
+  seeds.foldl (fun S' v => algB_step'' G S' nbrOrder hOrder v) S
+
+public noncomputable def algB_run''
+    (G : SimpleGraph V) (nbrOrder : V → List V) (hOrder : OrderMatchesAdj G nbrOrder)
+    (seeds : List V) (k : ℕ) (S : Finset V) : Finset V :=
+  match k with
+  | 0 => S
+  | k' + 1 => algB_sweep'' G nbrOrder hOrder seeds (algB_run'' G nbrOrder hOrder seeds k' S)
+
+public def FixedPointCover''
+    (G : SimpleGraph V) (S₀ : Finset V) (nbrOrder : V → List V)
+    (hOrder : OrderMatchesAdj G nbrOrder) (M : Finset (Sym2 V)) (n : ℕ) : Prop :=
+  S₀.card ≤ n ∧
+  algB_sweep'' G nbrOrder hOrder (seedsOf M) (algB_run'' G nbrOrder hOrder (seedsOf M) n S₀)
+    = algB_run'' G nbrOrder hOrder (seedsOf M) n S₀
+
+end VCCBGSecC
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- §14. The challenge: Theorem 1
 -- ═══════════════════════════════════════════════════════════════════════════
 
 /-- **Theorem 1** ("VC − CBG is NP-complete"), the result being submitted.
@@ -795,7 +1044,7 @@ public theorem VCCBGSecB.Theorem1_wrapper
   sorry
 
 -- ═══════════════════════════════════════════════════════════════════════════
--- §14. The challenge: Theorem 2
+-- §15. The challenge: Theorem 2
 -- ═══════════════════════════════════════════════════════════════════════════
 
 /-- **Theorem 2** ("VC − CBG is in P"), the result being submitted. -/
@@ -845,4 +1094,25 @@ public theorem VCCBGPartII.Theorem2_wrapper
     (hline8 : Table17Bound T2)
     (hline10 : Table18Bound T3) :
     InP G := by
+  sorry
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- §16. The challenge: Theorem 13
+-- ═══════════════════════════════════════════════════════════════════════════
+
+/-- **Theorem 13** (Algorithm A returns "Yes" if and only if the given
+    instance of VC-CBG is a "Yes" instance), the result being submitted:
+    (⇒) Lemma 10, (⇐) Lemma 9. -/
+public theorem VCCBGSecC.Theorem13_wrapper
+    (hcubic : ∀ v : V, G.degree v = 3)
+    (hbridgeless : ∀ ⦃e : Sym2 V⦄, e ∈ G.edgeSet → ¬ G.IsBridge e)
+    (k : ℕ)
+    {S₀ S : Finset V} (hS₀ : VCover G S₀)
+    {nbrOrder : V → List V} (hOrder : OrderMatchesAdj G nbrOrder)
+    (hlen : ∀ x, (nbrOrder x).length ≤ Fintype.card V)
+    {M : Finset (Sym2 V)} (hM : IsPerfectMatching M)
+    {n : ℕ} (hfp : FixedPointCover'' G S₀ nbrOrder hOrder M n)
+    (hSeq : S = algB_run'' G nbrOrder hOrder (seedsOf M) n S₀)
+    (hSbound : S.card ≤ Fintype.card V - 1) :
+    (S.card ≤ k → YesInstance G k) ∧ (YesInstance G k → AlgA_Yes G k) := by
   sorry

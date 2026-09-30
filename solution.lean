@@ -4,9 +4,10 @@ public import VCCBGMain
 
 set_option linter.unusedDecidableInType false
 set_option linter.unusedVariables false
+set_option linter.unusedSectionVars false
 
 /-!
-# Proved solution — Theorem 1 and Theorem 2
+# Proved solution — Theorem 1, Theorem 2, and Theorem 13
 
 **Theorem 1** — "VC − CBG is NP-complete." — obtained from Theorem 11 by
    "proof by restriction" (`thm1.lean`).
@@ -15,11 +16,15 @@ set_option linter.unusedVariables false
    result, obtained from Theorem 8 (Algorithm 1 is correct) together with
    Theorem 9 (Algorithm 1 runs in O(m^5) time).
 
+**Theorem 13** — "Algorithm A returns Yes iff the given instance of VC − CBG
+   is a Yes instance" — obtained from Lemma 9 and Lemma 10 (`thm13.lean`).
+
 Unlike `challenge.lean` (which re-derives every definition from
 Mathlib alone so that `Theorem*_wrapper`'s statement type-checks with no
 outside help), this file imports the real, already-proved development
 and discharges the identical statement by directly invoking the real
-`Theorem1` (`thm1.lean`) / `Theorem2` (`thm2.lean`) with the supplied arguments.
+`Theorem1` (`thm1.lean`) / `Theorem2` (`thm2.lean`) / `Theorem13`
+(`thm13.lean`) with the supplied arguments.
 -/
 open Finset
 
@@ -82,3 +87,18 @@ public theorem VCCBGPartII.Theorem2_wrapper
   Theorem2 hcubic hbridgeless adj0 Vs M lt hMinv hMadj hrow_pair htwo hedges
     hrows_half hmatchingEdges_card hV_pos hRowsCoverAll hRemoveInv0 hFS0 hNoAdjAll
     hphase_eq hSseq_step hstationary T1 T2 T3 hother hline8 hline10
+
+/-- Goal accomplished: `Theorem13_wrapper` is literally `Theorem13`. -/
+public theorem VCCBGSecC.Theorem13_wrapper
+    (hcubic : ∀ v : V, G.degree v = 3)
+    (hbridgeless : ∀ ⦃e : Sym2 V⦄, e ∈ G.edgeSet → ¬ G.IsBridge e)
+    (k : ℕ)
+    {S₀ S : Finset V} (hS₀ : VCover G S₀)
+    {nbrOrder : V → List V} (hOrder : OrderMatchesAdj G nbrOrder)
+    (hlen : ∀ x, (nbrOrder x).length ≤ Fintype.card V)
+    {M : Finset (Sym2 V)} (hM : IsPerfectMatching M)
+    {n : ℕ} (hfp : FixedPointCover'' G S₀ nbrOrder hOrder M n)
+    (hSeq : S = algB_run'' G nbrOrder hOrder (seedsOf M) n S₀)
+    (hSbound : S.card ≤ Fintype.card V - 1) :
+    (S.card ≤ k → YesInstance G k) ∧ (YesInstance G k → AlgA_Yes G k) :=
+  Theorem13 hcubic hbridgeless k hS₀ hOrder hlen hM hfp hSeq hSbound

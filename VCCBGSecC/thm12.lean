@@ -30,16 +30,16 @@ variable {V : Type*} [DecidableEq V] [Fintype V]
 variable {G : SimpleGraph V} [DecidableRel G.Adj]
 
 -- ═══════════════════════════════════════════════════════════════════════════
--- §1. Vertex covers
+-- §1. Vertex covers (imported from definition_vcover)
 -- ═══════════════════════════════════════════════════════════════════════════
 
 -- /-- `VCover G S`: every edge of G has at least one endpoint in S. -/
 -- public abbrev VCover (G : SimpleGraph V) (S : Finset V) : Prop :=
 --   ∀ ⦃u v : V⦄, G.Adj u v → u ∈ S ∨ v ∈ S
 
-/-- `MinVCover G S`: S is a vertex cover of minimum cardinality. -/
-public abbrev MinVCover (G : SimpleGraph V) (S : Finset V) : Prop :=
-  VCover G S ∧ ∀ T : Finset V, VCover G T → S.card ≤ T.card
+-- /-- `MinVCover G S`: S is a vertex cover of minimum cardinality. -/
+-- public abbrev MinVCover (G : SimpleGraph V) (S : Finset V) : Prop :=
+--   VCover G S ∧ ∀ T : Finset V, VCover G T → S.card ≤ T.card
 
 -- ═══════════════════════════════════════════════════════════════════════════
 -- §2. Structures (Definitions 24 and 25 of the paper)

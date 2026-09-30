@@ -137,16 +137,17 @@ axiom AlgB_spec
 -- §4. Definitions: Yes instance and Algorithm A output
 -- ═══════════════════════════════════════════════════════════════════════════
 
-/-- `YesInstance G k`: there exists a vertex cover of G of size at most k.
-    This is the VC-CBG problem answering "Yes". -/
-public def YesInstance (G : SimpleGraph V) (k : ℕ) : Prop :=
-  ∃ T : Finset V, VCover G T ∧ T.card ≤ k
+--  (imported from definition_vcover)
+-- /-- `YesInstance G k`: there exists a vertex cover of G of size at most k.
+--     This is the VC-CBG problem answering "Yes". -/
+-- @[expose] public def YesInstance (G : SimpleGraph V) (k : ℕ) : Prop :=
+--   ∃ T : Finset V, VCover G T ∧ T.card ≤ k
 
 /-- `AlgA_Yes G k`: Algorithm A outputs Yes on input (G, k).
     Defined as a Prop: both conditions that lead to Yes in Algorithm A hold:
       - k ≥ |M| so Line 3 does not return No, AND
       - ∃ S returned by AlgB with |S| ≤ k so Line 8 returns Yes. -/
-public def AlgA_Yes (G : SimpleGraph V) (k : ℕ) : Prop :=
+@[expose] public def AlgA_Yes (G : SimpleGraph V) (k : ℕ) : Prop :=
   ∃ M : Finset (Sym2 V),
     IsPerfectMatching M ∧ 2 * M.card = Fintype.card V ∧ M.card ≤ k ∧
   ∃ S : Finset V,

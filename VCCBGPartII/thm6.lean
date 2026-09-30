@@ -72,12 +72,12 @@ variable {V : Type*} [DecidableEq V] [Fintype V]
 variable {G : SimpleGraph V} [DecidableRel G.Adj]
 
 -- ═══════════════════════════════════════════════════════════════════════════
--- §1. MinVCover
+-- §1. MinVCover (transitively imported from definition_vcover)
 -- ═══════════════════════════════════════════════════════════════════════════
 
-/-- `MinVCover G S`: S is a vertex cover of minimum cardinality. -/
-public abbrev MinVCover (G : SimpleGraph V) (S : Finset V) : Prop :=
-  VCover G S ∧ ∀ T : Finset V, VCover G T → S.card ≤ T.card
+-- /-- `MinVCover G S`: S is a vertex cover of minimum cardinality. -/
+-- public abbrev MinVCover (G : SimpleGraph V) (S : Finset V) : Prop :=
+--   VCover G S ∧ ∀ T : Finset V, VCover G T → S.card ≤ T.card
 
 -- ═══════════════════════════════════════════════════════════════════════════
 -- §2. Definition 19: duads and duadic hops

@@ -137,14 +137,14 @@ variable {V : Type*} [DecidableEq V] [Fintype V] [Inhabited V]
 variable {G : SimpleGraph V} [DecidableRel G.Adj]
 
 -- ═══════════════════════════════════════════════════════════════════════════
--- §1. The VC − CBG decision problem
+-- §1. The VC − CBG decision problem (imported from definition_vcover)
 -- ═══════════════════════════════════════════════════════════════════════════
 
-/-- **VC − CBG, "Yes instance."** `G` together with a bound `k` is a Yes
-    instance of the vertex-cover decision problem iff `G` has a vertex
-    cover of size at most `k`. -/
-public abbrev YesInstance (G : SimpleGraph V) (k : ℕ) : Prop :=
-  ∃ S : Finset V, VCover G S ∧ S.card ≤ k
+-- /-- **VC − CBG, "Yes instance."** `G` together with a bound `k` is a Yes
+--     instance of the vertex-cover decision problem iff `G` has a vertex
+--     cover of size at most `k`. -/
+-- public abbrev YesInstance (G : SimpleGraph V) (k : ℕ) : Prop :=
+--   ∃ S : Finset V, VCover G S ∧ S.card ≤ k
 
 -- ═══════════════════════════════════════════════════════════════════════════
 -- §2. `inMOf`/`RT0Of`: naming `vertexCover`'s own internal terms
