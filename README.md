@@ -24,6 +24,8 @@ The formalization strictly mirrors the structure of the paper, covering:
 * **Graph-Theoretic Theorem:** Bridging diminishing hops and minimum vertex cover (analogous to Berge's Theorem).
 * **Algorithmic Result:** An algorithm utilizing diminishing hops to find a minimum vertex cover (analogous to the Blossom Algorithm using augmenting paths to find maximum matching due to Berge's Theorem).
 
+![Analogy betweeen Augmenting Paths and Diminishing Hops](https://github.com/KunalRelia/kunalrelia.github.io/blob/master/img/APMM-DHMVC.png)
+
 ---
 
 ### Theorem 1, Section B (VCCBG is NP-complete)
