@@ -1088,11 +1088,7 @@ public theorem VCCBGPartII.Theorem2_wrapper
       ¬ (∃ _ : DiminishingHop ((RT0Of (G := G) adj0 Vs M).toRepTable M hMinv hMadj hrow_pair)
               (SseqOf ((Fintype.card V) ^ 2) (RT0Of (G := G) adj0 Vs M) n), True) →
         SseqOf ((Fintype.card V) ^ 2) (RT0Of (G := G) adj0 Vs M) (n + 1)
-          = SseqOf ((Fintype.card V) ^ 2) (RT0Of (G := G) adj0 Vs M) n)
-    (T1 T2 T3 : ℕ → ℕ)
-    (hother : OtherLinesBound T1 T2 T3)
-    (hline8 : Table17Bound T2)
-    (hline10 : Table18Bound T3) :
+          = SseqOf ((Fintype.card V) ^ 2) (RT0Of (G := G) adj0 Vs M) n) :
     InP G := by
   sorry
 

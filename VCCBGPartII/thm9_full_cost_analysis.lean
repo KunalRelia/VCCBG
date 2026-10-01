@@ -49,6 +49,10 @@ variable {G : SimpleGraph V} [DecidableRel G.Adj]
 
 public noncomputable def mPow (k : ℕ) : ℕ → ℝ := fun m => (m : ℝ) ^ k
 
+/-- Unfolding lemma for `mPow`. -/
+public theorem mPow_apply (k m : ℕ) : mPow k m = (m : ℝ) ^ k := by
+  simp only [mPow]
+
 public theorem mPow_isBigO_of_le {j k : ℕ} (h : j ≤ k) : mPow j =O[atTop] mPow k := by
   have hev : ∀ᶠ m : ℕ in atTop, ‖mPow j m‖ ≤ 1 * ‖mPow k m‖ := by
     filter_upwards [eventually_ge_atTop 1] with m hm
@@ -509,6 +513,10 @@ public theorem T2_isBigO : (fun m : ℕ => (T2 m : ℝ)) =O[atTop] mPow 2 := by
     `thm9.lean §1`), now with every summand a proved bound on
     the actual recursive code rather than an assumed hypothesis. -/
 public def T1 (m : ℕ) : ℕ := (3 * m + 3) + T2 m + T3' m
+
+/-- Table 16's three-line decomposition of `T1`, as a lemma. -/
+public theorem T1_decomp (m : ℕ) : T1 m = (3 * m + 3) + T2 m + T3' m := by
+  simp only [T1]
 
 public theorem T1_eq (m : ℕ) :
     T1 m = 2 * m ^ 5 + 2 * m ^ 4 + 2 * m ^ 3 + 12 * m ^ 2 + 8 * m + 3 := by

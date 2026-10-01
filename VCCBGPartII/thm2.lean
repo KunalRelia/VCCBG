@@ -82,7 +82,9 @@ public def InP (G : SimpleGraph V) : Prop :=
 
 /-- **Theorem 2** ("VC − CBG is in P"), proved from `Theorem8` (Algorithm 1
     decides VC − CBG correctly) together with `Theorem9` (Algorithm 1's
-    own running time `T1` is `O(m^5)`. -/
+    own running time `T1` — the concrete cost function of
+    `thm9_full_cost_analysis.lean` — is `O(m^5)`, with no assumed table
+    bounds). -/
 public theorem Theorem2
     (hcubic : ∀ v : V, G.degree v = 3)
     (hbridgeless : ∀ ⦃e : Sym2 V⦄, e ∈ G.edgeSet → ¬ G.IsBridge e)
@@ -124,11 +126,7 @@ public theorem Theorem2
               (SseqOf ((Fintype.card V) ^ 2) (RT0Of (G := G) adj0 Vs M) n), True) →
         SseqOf ((Fintype.card V) ^ 2) (RT0Of (G := G) adj0 Vs M) (n + 1)
           = SseqOf ((Fintype.card V) ^ 2) (RT0Of (G := G) adj0 Vs M) n)
-    (T1 T2 T3 : ℕ → ℕ)
-    (hother : OtherLinesBound T1 T2 T3)
-    (hline8 : Table17Bound T2)
-    (hline10 : Table18Bound T3) :
-    InP G := by
+    : InP G := by
   refine ⟨fun k => vertexCover (G := G) adj0 Vs M lt k, T1, ?_, ?_⟩
   · -- Correctness, for every k: Theorem 8, instantiated at k.
     intro k
@@ -136,7 +134,7 @@ public theorem Theorem2
       hrows_half (hmatchingEdges_card k) hV_pos hRowsCoverAll hRemoveInv0 hFS0 hNoAdjAll
       hphase_eq hSseq_step hstationary
   · -- Efficiency: Theorem 9's O(m^5) bound is, in particular, polynomial.
-    exact PolyBound_of_isBigO_mPow5 (Theorem9 T1 T2 T3 hother hline8 hline10)
+    exact PolyBound_of_isBigO_mPow5 Theorem9
 
 -- ═══════════════════════════════════════════════════════════════════════════
 -- §3. Commentary

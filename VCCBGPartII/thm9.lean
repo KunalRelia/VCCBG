@@ -17,7 +17,7 @@ module
      lines as shown in Table 16. This dominant complexity is O(m^5).
      Hence, the time complexity of the entire algorithm is O(m^5)."
 
-  In this file, we take **each table's own
+  The generic part of this file takes **each table's own
   dominant-line bound** as an explicit hypothesis, exactly the content
   Tables 16-23 themselves supply and exactly what the paper's own
   one-paragraph proof of Theorem 9 leans on, and derive the *combination*
@@ -32,8 +32,10 @@ module
     time" is modeled as an abstract function `ℕ → ℕ` (steps as a function
     of `m`, the vertex count
 
-  We compute the time complexity using definitions from scratch using actual
-  computation steps in `thm9_full_cost_analysis.lean`.
+  The time complexity is computed from the actual computation steps in
+  `thm9_full_cost_analysis.lean`, which this file imports. §4 below
+  discharges every hypothesis with the proven results there
+  (`Theorem9`, now hypothesis-free).
 
   Theorem `Theorem9_derived` (§9) in `thm9_full_cost_analysis.lean` consists of every
   one of this file's Table 17-23 hypotheses as a corresponding *theorem*:
@@ -46,7 +48,7 @@ module
       Table 23 (Alg. 6, fr)        ↔ `T8'_isBigO`   (§4, proved)
 -/
 
-public import Mathlib
+public import VCCBGPartII.thm9_full_cost_analysis
 /-! setting linters. -/
 set_option linter.unusedSectionVars false
 set_option linter.unusedVariables false
@@ -57,24 +59,9 @@ open Asymptotics Filter
 -- §0. Polynomial growth rates, as `ℕ → ℝ` functions for `IsBigO`
 -- ═══════════════════════════════════════════════════════════════════════════
 
-/-- `mPow k`: the function `m ↦ m ^ k`, cast to `ℝ`, i.e. the paper's own
-    `O(m^k)` growth rate for the `k` actually appearing in Tables 16-23
-    (`k = 1` for elementary/linear lines, up to `k = 5` for Line 10's own
-    dominant complexity). -/
-public noncomputable def mPow (k : ℕ) : ℕ → ℝ := fun m => (m : ℝ) ^ k
-
-/-- `mPow` is monotone in the exponent for `m ≥ 1`, hence `O(m^j) ⊆
-    O(m^k)` whenever `j ≤ k` — the single fact that lets a lower-order
-    line's cost be absorbed into a higher-order dominant term, matching
-    "Line 10 ... dominates the complexity of all other lines." -/
-public theorem mPow_isBigO_of_le {j k : ℕ} (h : j ≤ k) : mPow j =O[atTop] mPow k := by
-  have hev : ∀ᶠ m : ℕ in atTop, ‖mPow j m‖ ≤ 1 * ‖mPow k m‖ := by
-    filter_upwards [eventually_ge_atTop 1] with m hm
-    have hm1 : (1 : ℝ) ≤ (m : ℝ) := by exact_mod_cast hm
-    have hm0 : (0 : ℝ) ≤ (m : ℝ) := le_trans zero_le_one hm1
-    simp only [mPow, Real.norm_eq_abs, abs_pow, abs_of_nonneg hm0, one_mul]
-    exact pow_le_pow_right₀ hm1 h
-  exact IsBigO.of_bound 1 hev
+-- `mPow` and `mPow_isBigO_of_le` (`mPow` is monotone in the exponent for
+-- `m ≥ 1`, so `O(m^j) ⊆ O(m^k)` for `j ≤ k`) now come from
+-- `thm9_full_cost_analysis.lean §0` (`mPow k := fun m => (m : ℝ) ^ k`).
 
 /-- Constant-multiple bound, needed since Tables 16-23's individual
     lines/loops come with their own leading constants (loop bodies
@@ -92,7 +79,7 @@ public theorem const_mul_mPow_isBigO {c : ℝ} {k : ℕ} :
     in an earlier draft, since `IsBigO`'s statement is not syntactically
     closed under `simp`-normal-form rewriting on one side only). -/
 public theorem mPow_one_eq : mPow 1 = fun m : ℕ => (m : ℝ) := by
-  funext m; simp [mPow]
+  funext m; simp only [mPow_apply, pow_one]
 
 -- /-- `m ↦ m`, cast to `ℝ`, is (trivially) `O(mPow 1)`. -/
 -- theorem id_isBigO_mPow_one : (fun m : ℕ => (m : ℝ)) =O[atTop] mPow 1 := by
@@ -112,6 +99,8 @@ public theorem id_isBigO_mPow_one : (fun m : ℕ => (m : ℝ)) =O[atTop] mPow 1 
   --   We work with their real-valued casts
   --   (`fun m => (T_i m : ℝ)`) throughout, since `Asymptotics.IsBigO` is
   --   stated over normed (here, `ℝ`-valued) codomains.
+section GenericBounds
+
 variable (T1 T2 T3 T4 T5 T6 T7 T8 : ℕ → ℕ)
 
 /-- **Table 16, "other lines" (all lines of Algorithm 1 besides Lines 8
@@ -180,7 +169,7 @@ public def Table23Bound : Prop := (fun m : ℕ => (T8 m : ℝ)) =O[atTop] mPow 2
     call into Algorithm 2 (`Table17Bound`, `O(m^2)`) plus Line 10's call
     into Algorithm 3 (`Table18Bound`, `O(m^5)` — the paper's own cited
     dominant term), Algorithm 1's total running time `T1` is `O(m^5)`. -/
-public theorem Theorem9
+public theorem Theorem9_of_tables
     (hother : OtherLinesBound T1 T2 T3)
     (hline8 : Table17Bound T2)
     (hline10 : Table18Bound T3) :
@@ -224,7 +213,7 @@ public theorem Table18Bound_of_Table19
     have hprod : (fun m : ℕ => (m : ℝ) * (T4 m : ℝ)) =O[atTop] (fun m : ℕ => mPow 1 m * mPow 4 m) :=
       id_isBigO_mPow_one.mul htable19
     have heq : (fun m : ℕ => mPow 1 m * mPow 4 m) = mPow 5 := by
-      funext m; simp [mPow]; ring
+      funext m; simp only [mPow_apply]; ring
     rw [heq] at hprod
     exact hprod
   exact hrounds.trans hmul
@@ -240,12 +229,12 @@ public theorem Table19Bound_of_Table20
     have hprod : (fun m : ℕ => (m : ℝ) * (T5 m : ℝ)) =O[atTop] (fun m : ℕ => mPow 1 m * mPow 3 m) :=
       id_isBigO_mPow_one.mul htable20
     have heq : (fun m : ℕ => mPow 1 m * mPow 3 m) = mPow 4 := by
-      funext m; simp [mPow]; ring
+      funext m; simp only [mPow_apply]; ring
     rw [heq] at hprod
     exact hprod
   exact hrows.trans hmul
 
-/-- **Theorem 9, fully chained**: combining `Theorem9` with
+/-- **Theorem 9, fully chained**: combining `Theorem9_of_tables` with
     `Table18Bound_of_Table19`/`Table19Bound_of_Table20`, Algorithm 1's
     `O(m^5)` running time is derived from nothing coarser than Table 20
     (Algorithm 8's own `O(m^3)`) together with the two round-count facts
@@ -260,12 +249,68 @@ public theorem Theorem9_chained
     (hrows7 : (fun m : ℕ => (T4 m : ℝ)) =O[atTop] (fun m : ℕ => (m : ℝ) * (T5 m : ℝ)))
     (htable20 : Table20Bound T5) :
     (fun m : ℕ => (T1 m : ℝ)) =O[atTop] mPow 5 :=
-  Theorem9 T1 T2 T3
+  Theorem9_of_tables T1 T2 T3
     hother hline8
     (Table18Bound_of_Table19 T3 T4 hrounds3 (Table19Bound_of_Table20 T4 T5 hrows7 htable20))
 
+end GenericBounds
+
 -- ═══════════════════════════════════════════════════════════════════════════
--- §4. Commentary
+-- §4. Discharging the hypotheses with the proven cost analysis
+--     (`thm9_full_cost_analysis.lean`). Outside `GenericBounds`, `T1`, `T2`,
+--     `T3'`, ... denote the *concrete* cost functions defined there.
+-- ═══════════════════════════════════════════════════════════════════════════
+
+/-- Table 16 "other lines": `T1 m = (3m+3) + T2 m + T3' m` (`T1_decomp`), so
+    the remainder is exactly `3m+3 = O(m)`. -/
+public theorem otherLinesBound_cost : OtherLinesBound T1 T2 T3' := by
+  unfold OtherLinesBound
+  have heq : ((fun m : ℕ => (T1 m : ℝ)) - (fun m : ℕ => (T2 m : ℝ) + (T3' m : ℝ))) =
+      fun m : ℕ => ((3 * m + 3 : ℕ) : ℝ) := by
+    funext m
+    simp only [Pi.sub_apply]
+    rw [T1_decomp m]
+    push_cast
+    ring
+  rw [heq]
+  refine isBigO_of_nat_le_poly (f := fun m : ℕ => 3 * m + 3) (k := 1) (c := 6) ?_
+  intro m
+  simp only [pow_one]
+  omega
+
+/-- Table 17 (Algorithm 2): proved, `T2_isBigO`. -/
+public theorem table17Bound_cost : Table17Bound T2 := T2_isBigO
+
+/-- Table 18 (Algorithm 3): proved, `T3'_isBigO`. -/
+public theorem table18Bound_cost : Table18Bound T3' := T3'_isBigO
+
+/-- Table 19 (Algorithm 7): proved, `T4'_isBigO`. -/
+public theorem table19Bound_cost : Table19Bound T4' := T4'_isBigO
+
+/-- Table 20 (Algorithm 8): proved, `T5_isBigO` (amortized argument on `dhPaired`). -/
+public theorem table20Bound_cost : Table20Bound T5 := T5_isBigO
+
+/-- Table 21 (Algorithm 4): proved, `T2'_isBigO`. -/
+public theorem table21Bound_cost : Table21Bound T2' := T2'_isBigO
+
+/-- Table 22 (Algorithm 5): proved, `T7'_isBigO`. -/
+public theorem table22Bound_cost : Table22Bound T7' := T7'_isBigO
+
+/-- Table 23 (Algorithm 6): the proved bound is `O(m)` (`T8'_isBigO`), which
+    is absorbed into the table's `O(m^2)` target. -/
+public theorem table23Bound_cost : Table23Bound T8' :=
+  T8'_isBigO.trans (mPow_isBigO_of_le (by norm_num))
+
+/-- **Theorem 9** (paper, p.62): "The asymptotic running time of Algorithm 1
+    is O(m^5)." No hypotheses: `Theorem9_of_tables` applied to the concrete
+    cost functions of `thm9_full_cost_analysis.lean`, with every table bound
+    discharged by a proven result (`otherLinesBound_cost`, `table17Bound_cost`,
+    `table18Bound_cost`). `T1` is Algorithm 1's cost from that file. -/
+public theorem Theorem9 : (fun m : ℕ => (T1 m : ℝ)) =O[atTop] mPow 5 :=
+  Theorem9_of_tables T1 T2 T3' otherLinesBound_cost table17Bound_cost table18Bound_cost
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- §5. Commentary
 -- ═══════════════════════════════════════════════════════════════════════════
 /-
   STATUS: no `sorry`, `axiom`, or hypothesis hacking.
@@ -291,7 +336,7 @@ public theorem Theorem9_chained
     "Line 10 in Algorithm 1 dominates the complexity of all other lines
      as shown in Table 16. This dominant complexity is O(m^5). Hence, the
      time complexity of the entire algorithm is O(m^5)."
-        → `Theorem9`'s proof exactly: absorb `OtherLinesBound` (O(m)) and
+        → `Theorem9_of_tables`'s proof exactly: absorb `OtherLinesBound` (O(m)) and
           `Table17Bound` (O(m^2)) into `mPow 5` via `mPow_isBigO_of_le`,
           then `IsBigO.add` them against `Table18Bound` (O(m^5), Line
           10's own contribution) — "dominates" formalized precisely as
