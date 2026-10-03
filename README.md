@@ -1,6 +1,6 @@
 # VCCBG Formalization
 
-This repository contains the formal verification in **Lean** of results from the paper on the computational complexity of the **Vertex Cover Problem on Cubic Bridgeless Graphs (VCCBG)**. 
+This repository contains the **Lean** formalization of results from the paper on the computational complexity of the **Vertex Cover Problem on Cubic Bridgeless Graphs (VCCBG)**. 
 
 Specifically, this repository formalizes:
 1. an unconditional deterministic polynomial-time exact algorithm for VCCBG (Theorem 2, Part II).
@@ -72,9 +72,9 @@ Next, please clone this repository. Then, follow these steps:
 ---
 
 ## Related Repositories
-The previous version of this GitHub repository formalizing earlier algorithms in Section C of the VCCBG paper has been moved [here](https://github.com/KunalRelia/VCCBG-SecC-Legacy) to a legacy repository.
+The previous version of this GitHub repository formalizing earlier algorithms in Section C of the paper has been moved to a legacy repository: [VCCBG-SecC-Legacy](https://github.com/KunalRelia/VCCBG-SecC-Legacy).
 
-A strict subset of the formalization, specifically Part II's proof of correctness, can be found here: [KunalRelia/VCCBG-PartII-Palomar](https://github.com/KunalRelia/VCCBG-PartII-Palomar).
+A strict subset of the formalization, specifically Part II's proof of correctness, can be found here: [VCCBG-PartII-Palomar](https://github.com/KunalRelia/VCCBG-PartII-Palomar).
 
 ---
 
