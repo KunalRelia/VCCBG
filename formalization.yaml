@@ -11,10 +11,11 @@ project:
     results from the paper on the computational complexity of the 
     Vertex Cover Problem on Cubic Bridgeless Graphs (VCCBG). 
     Specifically, this repository formalizes: 
-    1. an unconditional deterministic polynomial-time exact 
+    1. the proof of NP-completeness of VCCBG (Theorem 1, Part I).
+    2. an unconditional deterministic polynomial-time exact 
     algorithm for VCCBG (Theorem 2, Part II).
-    2. the proof of NP-completeness of VCCBG (Theorem 1, Section B). 
-    3. the proof of correctness of an alternative unconditional 
+    3. the alternative proof of NP-completeness of VCCBG (Theorem 1, Section B). 
+    4. the proof of correctness of an alternative unconditional 
     deterministic polynomial-time exact algorithm for 
     VCCBG (Theorem 13, Section C). 
     The core contribution of the paper are the algorithms. 
@@ -86,7 +87,7 @@ alignment:
   namespace: ""
   statements:
     - source: "Paper at https://kunalrelia.github.io/img/VCCBG.pdf."
-      lean: "VCCBGSecB.Theorem1_wrapper, VCCBGPartII.Theorem2_wrapper, VCCBGSecC.Theorem13_wrapper"
+      lean: "VCCBGPartI.Theorem1_wrapper, VCCBGSecB.Theorem1_wrapper, VCCBGPartII.Theorem2_wrapper, VCCBGSecC.Theorem13_wrapper"
       module: "challenge.lean (statement), solution.lean (proof)"
       status: "proved"
       note: ""

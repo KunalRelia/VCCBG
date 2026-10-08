@@ -7,14 +7,17 @@ set_option linter.unusedVariables false
 set_option linter.unusedSectionVars false
 
 /-!
-# Proved solution — Theorem 1, Theorem 2, and Theorem 13
+# Proved solution — Theorem 1, Theorem 2, Theorem 1 (alternative proof), and Theorem 13
 
-**Theorem 1** — "VC − CBG is NP-complete." — obtained from Theorem 11 by
-   "proof by restriction" (`thm1.lean`).
+**Theorem 1** — "VC − CBG is NP-complete." — via the explicit reduction
+   VC-CG ≤P VC-CBG (`VCCBGPartI/thm1.lean`, `theorem1_I`).
 
 **Theorem 2** — "VC − CBG is in P." — the paper's headline complexity-class
    result, obtained from Theorem 8 (Algorithm 1 is correct) together with
    Theorem 9 (Algorithm 1 runs in O(m^5) time).
+
+**Theorem 1 (alternative)** — "VC − CBG is NP-complete." — obtained from Theorem 11 by
+   "proof by restriction" (`VCCBGSecB/thm1.lean`).
 
 **Theorem 13** — "Algorithm A returns Yes iff the given instance of VC − CBG
    is a Yes instance" — obtained from Lemma 9 and Lemma 10 (`thm13.lean`).
@@ -23,7 +26,7 @@ Unlike `challenge.lean` (which re-derives every definition from
 Mathlib alone so that `Theorem*_wrapper`'s statement type-checks with no
 outside help), this file imports the real, already-proved development
 and discharges the identical statement by directly invoking the real
-`Theorem1` (`thm1.lean`) / `Theorem2` (`thm2.lean`) / `Theorem13`
+`Theorem1` (from both `thm1.lean`) / `Theorem2` (`thm2.lean`) / `Theorem13`
 (`thm13.lean`) with the supplied arguments.
 -/
 open Finset
@@ -31,11 +34,10 @@ open Finset
 variable {V : Type*} [DecidableEq V] [Fintype V] [Inhabited V]
 variable {G : SimpleGraph V} [DecidableRel G.Adj]
 
-/-- Goal accomplished: `Theorem1_wrapper` is literally `Theorem1`. -/
-public theorem VCCBGSecB.Theorem1_wrapper
-    (hNPbridgeless : InNP (VCYes CubicPlanarBridgeless)) :
+/-- Goal accomplished: `Theorem1_wrapper` is literally `theorem1_I`. -/
+public theorem VCCBGPartI.Theorem1_wrapper :
     NPComplete (VCYes CubicBridgeless) :=
-  Theorem1 hNPbridgeless
+  theorem1_I
 
 /-- Goal accomplished: `Theorem2_wrapper` is literally `Theorem2`. -/
 public theorem VCCBGPartII.Theorem2_wrapper
@@ -83,6 +85,12 @@ public theorem VCCBGPartII.Theorem2_wrapper
   Theorem2 hcubic hbridgeless adj0 Vs M lt hMinv hMadj hrow_pair htwo hedges
     hrows_half hmatchingEdges_card hV_pos hRowsCoverAll hRemoveInv0 hFS0 hNoAdjAll
     hphase_eq hSseq_step hstationary
+
+/-- Goal accomplished: `Theorem1_wrapper` is literally `Theorem1`. -/
+public theorem VCCBGSecB.Theorem1_wrapper
+    (hNPbridgeless : InNP (VCYes CubicPlanarBridgeless)) :
+    NPComplete (VCYes CubicBridgeless) :=
+  Theorem1 hNPbridgeless
 
 /-- Goal accomplished: `Theorem13_wrapper` is literally `Theorem13`. -/
 public theorem VCCBGSecC.Theorem13_wrapper

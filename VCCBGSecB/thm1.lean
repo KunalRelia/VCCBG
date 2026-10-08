@@ -46,26 +46,7 @@ universe u
 --     Definitions 21/22 (and the already-standard Cubic/Bridgeless)
 -- ═══════════════════════════════════════════════════════════════════════════
 
-/-- A single instance of a vertex-cover decision problem: a finite simple
-    graph on some (existentially bundled) vertex type, together with a
-    bound `k`. `GraphInstance : Type 1` (it bundles a `Type` field). -/
-public structure GraphInstance where
-  V : Type
-  fV : Fintype V
-  dV : DecidableEq V
-  G : SimpleGraph V
-  dAdj : DecidableRel G.Adj
-  k : ℕ
-
 attribute [instance] GraphInstance.fV GraphInstance.dV GraphInstance.dAdj
-
-/-- **Cubic**, stated directly on a `GraphInstance` so its own bundled
-    instances are automatically in scope. -/
-public def IsCubic (inst : GraphInstance) : Prop := ∀ v : inst.V, inst.G.degree v = 3
-
-/-- **Bridgeless**. -/
-public def IsBridgeless (inst : GraphInstance) : Prop :=
-  ∀ ⦃e : Sym2 inst.V⦄, e ∈ inst.G.edgeSet → ¬ inst.G.IsBridge e
 
 /-- **Definition 21** (2-vertex-connected graph): "a graph that remains
     connected after the removal of one vertex." Formalized directly:
@@ -78,19 +59,10 @@ public def Is2VertexConnected (inst : GraphInstance) : Prop :=
 opaque IsPlanar (inst : GraphInstance) : Prop
 
 -- ═══════════════════════════════════════════════════════════════════════════
--- §1. An abstract, uninterpreted notion of NP / NP-hardness / NP-completeness
+-- §1. Notion of NP / NP-hardness / NP-completeness
 -- ═══════════════════════════════════════════════════════════════════════════
 
-/-- Membership in NP — left `opaque`. Universe-polymorphic in `Inst`'s
-    own universe `u` only. -/
-public opaque InNP {Inst : Type u} (Yes : Inst → Prop) : Prop
-
-/-- **NP-hardness** — left `opaque` -/
-opaque NPHard {Inst : Type u} (Yes : Inst → Prop) : Prop
-
-/-- **NP-completeness**: in NP, and NP-hard. -/
-public def NPComplete {Inst : Type u} (Yes : Inst → Prop) : Prop :=
-  InNP Yes ∧ NPHard Yes
+-- now imported from the common definition file
 
 -- ═══════════════════════════════════════════════════════════════════════════
 -- §1'. Restriction of instance families, and hardness transfer along it
@@ -104,10 +76,6 @@ public def FamilySubset (F₁ F₂ : GraphInstance → Prop) : Prop :=
 
 infixl:50 " ⊆f " => FamilySubset
 
-/-- The Yes-instances of "vertex cover, restricted to graphs satisfying
-    the family predicate `P`". -/
-public def VCYes (P : GraphInstance → Prop) (inst : GraphInstance) : Prop :=
-  P inst ∧ ∃ S : Finset inst.V, VCover inst.G S ∧ S.card ≤ inst.k
 
 /-- **NP-hardness transfers to any superfamily** ("proof by restriction"
     [GJ02], the logical engine of both Table 24 steps — "Equate" and
@@ -136,10 +104,6 @@ public def CubicPlanar2VC (inst : GraphInstance) : Prop :=
 /-- Table 24, row 2: **cubic + planar + bridgeless**. -/
 public def CubicPlanarBridgeless (inst : GraphInstance) : Prop :=
   IsCubic inst ∧ IsPlanar inst ∧ IsBridgeless inst
-
-/-- Table 24, row 3 (the goal): **cubic + bridgeless**. -/
-public def CubicBridgeless (inst : GraphInstance) : Prop :=
-  IsCubic inst ∧ IsBridgeless inst
 
 -- ═══════════════════════════════════════════════════════════════════════════
 -- §3. Theorem 10 (Mohar, [Moh01]) and Whitney's Theorem, as hypotheses

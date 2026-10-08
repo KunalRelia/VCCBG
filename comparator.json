@@ -1,7 +1,10 @@
 {
   "challenge_module": "challenge",
   "solution_module": "solution",
-  "theorem_names": ["VCCBGSecB.Theorem1_wrapper","VCCBGPartII.Theorem2_wrapper","VCCBGSecC.Theorem13_wrapper"],
+  "theorem_names": ["VCCBGPartI.Theorem1_wrapper",
+                    "VCCBGPartII.Theorem2_wrapper",
+                    "VCCBGSecB.Theorem1_wrapper",
+                    "VCCBGSecC.Theorem13_wrapper"],
   "definition_names": [],
   "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"],
   "enable_nanoda": true

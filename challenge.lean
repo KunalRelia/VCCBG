@@ -8,14 +8,19 @@ set_option linter.unusedSectionVars false
 set_option linter.unusedVariables false
 set_option linter.defProp false
 /-!
-# Advertised statements — Theorem 1, Theorem 2, and Theorem 13
+# Advertised statements — Theorem 1, Theorem 2, Theorem 1 (alternative proof), and Theorem 13
 
-  **Theorem 1** — "VC − CBG is NP-complete." — obtained from Theorem 11 by
-   "proof by restriction" (`thm1.lean`).
+  **Theorem 1** — "VC − CBG is NP-complete." — obtained directly from the
+   polynomial-time reduction VC-CG ≤P VC-CBG (Part I, Section 4), with the
+   concrete graph G' constructed and proved cubic and bridgeless (`thm1.lean`,
+   `theorem1_I`).
 
   **Theorem 2** — "VC − CBG is in P." — the paper's headline complexity-class
    result, obtained from Theorem 8 (Algorithm 1 is correct) together with
    Theorem 9 (Algorithm 1 runs in O(m^5) time).
+
+  **Theorem 1 (alternative proof)** — "VC − CBG is NP-complete." — obtained from
+  Theorem 11 by "proof by restriction" (`thm1.lean`).
 
   **Theorem 13** — "Algorithm A returns Yes iff the given instance of VC − CBG
    is a Yes instance" — obtained from Lemma 9 (forward direction) and Lemma 10
@@ -1091,6 +1096,26 @@ axiom Whitney (inst : GraphInstance) (h : Is2VertexConnected inst) :
 /-- **VC ∈ NP**, for any graph family. Cited standard fact. -/
 axiom VC_InNP (P : GraphInstance → Prop) : InNP (VCYes P)
 
+-- ─── additional definitions / axioms needed to state `Theorem1_I` (`VCCBGPartI/thm1.lean`) ───
+
+/-- The family of cubic graphs (as in `thm1.lean`). -/
+public abbrev CubicGraphs (inst : GraphInstance) : Prop := IsCubic inst
+
+/-- Many-one reduction between vertex-cover problems restricted to graph
+    families (the polynomial-time bound on `f` is part of the content of the
+    axiom `NPHard_of_reduction`; it is not formalized). -/
+public abbrev ReducesTo (P₁ P₂ : GraphInstance → Prop) : Prop :=
+  ∃ f : GraphInstance → GraphInstance,
+    ∀ inst, P₁ inst → (VCYes P₁ inst ↔ VCYes P₂ (f inst))
+
+/-- NP-hardness transfers along a (polynomial-time) many-one reduction.
+    Cited standard fact [GJ02]. -/
+axiom NPHard_of_reduction {P₁ P₂ : GraphInstance → Prop}
+    (hHard : NPHard (VCYes P₁)) (hred : ReducesTo P₁ P₂) : NPHard (VCYes P₂)
+
+/-- VC on cubic graphs is NP-hard. Cited result. -/
+axiom VC_CG_NPHard : NPHard (VCYes CubicGraphs)
+
 -- ═══════════════════════════════════════════════════════════════════════════
 -- §13. `thm13.lean` and predecessors: matchings, Algorithms A / B / C
 -- ═══════════════════════════════════════════════════════════════════════════
@@ -1329,11 +1354,10 @@ end VCCBGSecC
 -- §14. The challenge: Theorem 1
 -- ═══════════════════════════════════════════════════════════════════════════
 
-/-- **Theorem 1** ("VC − CBG is NP-complete"), the result being submitted.
-    The hypothesis is the membership of the (cubic + planar + bridgeless)
-    family's VC problem in NP, exactly as in `thm1.lean`. -/
-public theorem VCCBGSecB.Theorem1_wrapper
-    (hNPbridgeless : InNP (VCYes CubicPlanarBridgeless)) :
+/-- **Theorem 1** ("VC − CBG is NP-complete"), the result being submitted,
+    proved via the explicit reduction VC-CG ≤P VC-CBG (`thm1.lean`'s
+    `theorem1_I`). -/
+public theorem VCCBGPartI.Theorem1_wrapper :
     NPComplete (VCYes CubicBridgeless) := by
   sorry
 
@@ -1387,7 +1411,19 @@ public theorem VCCBGPartII.Theorem2_wrapper
   sorry
 
 -- ═══════════════════════════════════════════════════════════════════════════
--- §16. The challenge: Theorem 13
+-- §16. The challenge: Theorem 1 (alternative)
+-- ═══════════════════════════════════════════════════════════════════════════
+
+/-- **Theorem 1** ("VC − CBG is NP-complete"), the result being submitted.
+    The hypothesis is the membership of the (cubic + planar + bridgeless)
+    family's VC problem in NP, exactly as in `thm1.lean`. -/
+public theorem VCCBGSecB.Theorem1_wrapper
+    (hNPbridgeless : InNP (VCYes CubicPlanarBridgeless)) :
+    NPComplete (VCYes CubicBridgeless) := by
+  sorry
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- §17. The challenge: Theorem 13
 -- ═══════════════════════════════════════════════════════════════════════════
 
 /-- **Theorem 13** (Algorithm A returns "Yes" if and only if the given

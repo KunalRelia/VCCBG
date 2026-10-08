@@ -3,13 +3,13 @@ module
 -- ═══════════════════════════════════════════════════════════════════════════
 -- `Theorem1` : VCCBG is NP-complete.
 -- ═══════════════════════════════════════════════════════════════════════════
-public import VCCBGSecB.thm1
+public import VCCBGPartI.thm1
 /-
 `Theorem1` depends on the following axioms in
   addition to the three standard Lean axioms:
-  - [`NPHard_of_restriction`, `Theorem10`, `VC_InNP`, `Whitney`]
+  - [`VC_CG_NPHard`, `VC_InNP`, `NPHard_of_reduction`]
     We discuss the details of these published results in
-    `§6. Commentary` of `thm1.lean`.
+    `§9. Commentary` of `VCCBGPartI.thm1.lean`.
 -/
 
 
@@ -19,6 +19,18 @@ public import VCCBGSecB.thm1
 public import VCCBGPartII.thm2
 /-
 `Theorem2` does not depend on any additional axioms.
+-/
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- `Theorem1` : Alternative VCCBG is NP-complete.
+-- ═══════════════════════════════════════════════════════════════════════════
+public import VCCBGSecB.thm1
+/-
+`Theorem1` depends on the following axioms in
+  addition to the three standard Lean axioms:
+  - [`NPHard_of_restriction`, `Theorem10`, `VC_InNP`, `Whitney`]
+    We discuss the details of these published results in
+    `§6. Commentary` of `VCCBGSecB.thm1.lean`.
 -/
 
 

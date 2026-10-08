@@ -3,13 +3,22 @@
 This repository contains the **Lean** formalization of results from the paper on the computational complexity of the **Vertex Cover Problem on Cubic Bridgeless Graphs (VCCBG)**. 
 
 Specifically, this repository formalizes:
-1. an unconditional deterministic polynomial-time exact algorithm for VCCBG (Theorem 2, Part II).
-2. the proof of NP-completeness of VCCBG (Theorem 1, Section B)
-3. the proof of correctness of an alternative unconditional deterministic polynomial-time exact algorithm for VCCBG (Theorem 13, Section C). 
+1. the proof of NP-completeness of VCCBG (Theorem 1, Part I)
+2. an unconditional deterministic polynomial-time exact algorithm for VCCBG (Theorem 2, Part II).
+3. the alternative proof of NP-completeness of VCCBG (Theorem 1, Section B)
+4. the proof of correctness of an alternative unconditional deterministic polynomial-time exact algorithm for VCCBG (Theorem 13, Section C). 
 
 ---
 
 ## Overview of the Formalization
+
+### Theorem 1, Part I (VCCBG is NP-complete)
+
+**Theorem 1** is proven by a polynomial time reduction from a known NP-hard problem, namely the vertex cover problem on cubic graphs.
+
+We axiomatize the previously published results (e.g., the vertex cover problem is in NP). For a summary, please see [VCCBGMain.lean](https://github.com/KunalRelia/VCCBG/blob/main/VCCBGMain.lean). 
+
+---
 
 ### Theorem 2, Part II (VCCBG is in P)
 
@@ -38,7 +47,7 @@ The formalization strictly mirrors the structure of the paper, covering:
     - vertex cover problem on bridgeless cubic planar graphs is NP-complete.
 3. vertex cover problem on bridgeless cubic graphs is NP-complete.
 
-We axiomatize the previously published results (e.g., Mohar's result. For a summary, please see [VCCBGMain.lean](https://github.com/KunalRelia/VCCBG/blob/main/VCCBGMain.lean)). 
+We axiomatize the previously published results (e.g., Mohar's result). For a summary, please see [VCCBGMain.lean](https://github.com/KunalRelia/VCCBG/blob/main/VCCBGMain.lean). 
 
 --- 
 
@@ -54,7 +63,7 @@ The formalization strictly mirrors the structure of the paper, covering:
 * **Graph-Theoretic Theorem:** Bridging diminishing bipartite graphs and minimum vertex cover (analogous to Berge's Theorem).
 * **Algorithmic Result:** An algorithm utilizing diminishing bipartite graphs to find a minimum vertex cover (analogous to the Blossom Algorithm using augmenting paths to find maximum matching due to Berge's Theorem).
 
-We axiomatize the previously published results. **Importantly**, we axiomatize an unpublished result that is proven in the paper.
+We axiomatize the previously published results. **Importantly**, we axiomatize an unpublished result that is proven in the paper. For a summary, please see [VCCBGMain.lean](https://github.com/KunalRelia/VCCBG/blob/main/VCCBGMain.lean).
 
 --- 
 
