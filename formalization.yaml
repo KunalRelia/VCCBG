@@ -57,10 +57,10 @@ sources:
 
 status:
   scope: >-
-    Theorem 1, Theorem 2, and Theorem 13 of the paper are formalized.
+    Theorem 1 (Part I), Theorem 2 (Part II), Theorem 1 (Section B) and Theorem 13 (Section C) of the paper are formalized.
   sorry_count: 0
   sorry_in_definitions: 0
-  axioms: []
+  axioms: ['please refer to VCCBGMain.lean for details w.r.t. each theorem.']
 
 automation:
   methods:
@@ -87,7 +87,7 @@ alignment:
   namespace: ""
   statements:
     - source: "Paper at https://kunalrelia.github.io/img/VCCBG.pdf."
-      lean: "VCCBGPartI.Theorem1_wrapper, VCCBGSecB.Theorem1_wrapper, VCCBGPartII.Theorem2_wrapper, VCCBGSecC.Theorem13_wrapper"
+      lean: "VCCBGPartI.Theorem1_wrapper, VCCBGPartII.Theorem2_wrapper, VCCBGSecB.Theorem1_wrapper, VCCBGSecC.Theorem13_wrapper"
       module: "challenge.lean (statement), solution.lean (proof)"
       status: "proved"
       note: ""
